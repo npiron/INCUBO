@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>navigation</title>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/interface.js"></script>
+<link href="style.css" rel="stylesheet" type="text/css" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		
+		<script type="text/javascript">
+		// ce code permet de lever un évènement sur le clic d'un marqueur
+			function initialiser() {
+				var latlng = new google.maps.LatLng(46.779231, 6.659431);
+				var options = {
+					center: latlng,
+					zoom: 6,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				var carte = new google.maps.Map(document.getElementById("carte"), options);
+				// on crée les marqueurs
+				var marqueur = new google.maps.Marker({position: new google.maps.LatLng(46.779231, 6.659431),map: carte});
+				
+				// on crée les évènements
+				google.maps.event.addListener(marqueur, 'click', function() { // (click, rightclick, dblclick, drag, dragstart, dragend, mouseover, mouseout)
+				alert("Le marqueur a été cliqué.");
+				});
+				
+				 
+			}
+</script>
+
+</head>
+
+<body>
+
+
+<div class="dock" id="dock">
+  <div class="dock-container">
+  <a class="dock-item" href="#"><img src="images/home.png" alt="home" /><span>Acceuil</span></a> 
+  <a class="dock-item" href="#"><img src="images/email.png" alt="contact" /><span>Contact</span></a> 
+  <a class="dock-item" href="#"><img src="images/pointeur.png" alt="portfolio" /><span>menu marqueurs</span></a> 
+  <a class="dock-item" href="#"><img src="images/video.png" alt="video" /><span>Videos des sites</span></a> 
+</div>
+
+ <body onload="initialiser()">
+<center><div id="carte" style="width:800px; height:800px; top:150px"></div></center>
+</body>
+
+</div>
+<script type="text/javascript">
+	
+	$(document).ready(
+		function()
+		{
+			$('#dock').Fisheye(
+				{
+					maxWidth: 50,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container',
+					itemWidth: 40,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+		}
+	);
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+/*****************************************************/
+/****General****/
+*
+{
+	margin:0px;
+	padding:0px;
+}
+body
+{
+
+	font-family:Arial, Geneva, sans-serif;
+}
+a
+{
+	text-decoration:none;
+	color: black;
+	text-shadow:0 1px 0 rgba(255,255,255,.8);
+}
+
+img, table, tr, td
+{
+	border:0px;
+}
+h1
+{
+	text-align:center;
+	margin:0px;
+	padding:0px;
+}
+.clean
+{
+	clear:both;
+}
+.left
+{
+	text-align:left;
+}
+.center
+{
+	text-align:center;
+}
+
+input
+{
+	width:150px;
+}
+
+/*****************************************************/
+
+#top{
+
+	padding-left : 10px;
+	background-color: darkgrey;
+	border-bottom: 5px solid black;
+	height : 26px;
+	font: 1.2em 'Montserrat', sans-serif;
+}
+
+
+}
+ div#map {
+    position: relative;
+  }
+
+ #dialog{
+  	display: none;
+ }
+
+ #top ul {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+#top li {
+	float:left;
+	margin:0;
+	padding:0;
+	text-align:center;
+}
+
+#top li a {
+	display:block;
+	color:#FFF;
+	padding: 0px 5px 0px 5px;
+	height: 100%;
+	text-decoration:none;
+	border-right:2px solid #FFF;
+}
+
+#top #planete{
+	padding-top : 1px;
+	padding-right : 3px;
+}
+
+#top #incubo{
+	color : white;
+	border-right: 2px solid white;
+	padding-right : 5px;
+	height: 100%;
+	display: block;
+}
+
+
+#volet{
+	opacity: 0.8;
+	background-color: black;
+	right : 5px;
+	width : 300px;
+	height : 800px;
+	float: left;
+	position: absolute;
+	z-index : 2;
+	top : 80px;
+
+	-moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+
+
+   border: 5px solid rgba(255, 255, 255, 1);
+
+
+}
+

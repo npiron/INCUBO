@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8" />
+<meta name="author" content="Wolfgang Pichler" />
+
+<title>info onglets</title>
+
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false">
+</script>
+
+<style type="text/css">
+
+ body, html {
+	height:100%;
+	width: 100%;
+	margin:0;
+ }
+
+ div.wrapper { /* Size of infowindow */
+	width:320px;
+	height:240px;
+	margin: 6px;
+	display: none;
+ }
+
+ div.tabs { position: relative;
+	top: -44px;
+	left: -24px;
+	margin-bottom: -15px;
+}
+
+span.activeTab, span.passiveTab, span.hoverTab {
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright: 8px;
+	-webkit-border-top-left-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+ span.activeTab {
+	margin-right:-5px;
+	padding-left:7px;
+	padding-right:7px;
+	font-weight:bold;
+	font-size:16px;
+	border:1px solid #AAA;
+	color:#5D5CA0;
+	background-color:#FFF;
+	border-bottom:2px solid #FFF;
+ }
+
+*span.activeTab {
+	/* IE border top fix */
+	zoom:1;
+	/* IE border bottom fix */
+	position:relative;
+	bottom:-1px;
+}
+
+ span.passiveTab {
+	margin-right:-5px;
+	padding-left:8px;
+	padding-right:8px;
+	border:1px solid #AAA;
+	font-size:12px;
+	cursor:default;
+	background-color:#E9E9E9;
+	color:#006;
+	border-bottom:2px solid #E9E9E9;
+}
+
+ span.hoverTab {
+	margin-right:-5px;
+	padding-left:7px;
+	padding-right:7px;
+	font-size:14px;
+	border:none;
+	border-bottom:2px solid #DCDCDC;
+	cursor:pointer;
+	background-color:#DCDCDC;
+	color:#5676EA;
+}
+
+ div.cardContent {
+	width:320px; height:230px;
+	padding: 4px 5px 0 0;
+	border-top:1px solid #CACACA;
+	overflow-y:auto;
+font-size: 0.9em;
+	display:none;
+}
+
+</style>
+</head>
+
+<body onload="buildMap()">
+
+
+<div id="map" style="width: 100%; height: 100%;"></div>
+
+
+
+<div id="wrapper1" class="wrapper">
+<div id="firstTabs" class="tabs">
+
+<span id="tab1">Details</span>
+<span id="tab2">Street View</span>
+<span id="tab3">Mini Map</span>
+
+</div>
+
+<div id="firstCard1" class="cardContent">
+
+
+
+<b>Auxerre marqueur 1</b>
+
+<p>
+auxerre ville de merde 
+</p>
+
+<p>
+ya pa de bars
+</p>
+
+<p>
+presque pas enjoy les gars drop box powaa
+</p>
+
+</div>
+
+<div id="firstCard2" class="cardContent">
+
+
+
+</div>
+
+
+<div id="firstCard3" class="cardContent">
+
+
+
+
+
+</div>
+</div>
+
+
+
+<div id="wrapper2" class="wrapper">
+<div id="secTabs" class="tabs">
+
+<span id="mytab_1">Tab 1</span>
+<span id="mytab_2">Street View</span>
+
+</div>
+
+<div id="secCard1" class="cardContent">
+
+
+
+<p>Content...</p>
+</div>
+
+<div id="secCard2" class="cardContent">
+
+
+
+</div>
+</div>
+
+
+<script type="text/javascript">
+
+ var map, infowindow;
+
+
+function TabCard(tabid, cardid, point) {
+
+ this.tabid = tabid;
+ this.cardid = cardid;
+ this.handleTabs = handleTabs;
+ this.point = point;
+ this.handleTabs(1);
+}
+
+
+function handleTabs(num) {
+
+  var me = this;
+  var tabsdiv = document.getElementById(this.tabid);
+  var tab;
+  this.newcard = this.cardid + num;
+  if (!this.card) this.card = this.newcard;
+
+  document.getElementById(this.card).style.display = "none";
+  document.getElementById(this.newcard).style.display = "block";
+
+
+  this.card = this.newcard;
+
+
+  for (var i = 0, m; m = tabsdiv.childNodes[i]; i++) {
+   if (m.nodeType == 1) {
+     tab = m;
+
+   
+    if (tab.id.lastIndexOf(num)!=-1) {
+     tab.className = "activeTab";
+     tab.onmouseover = null;
+     tab.onmouseout = null;
+     tab.onclick = null;
+    }
+
+    else {
+
+
+     tab.className = "passiveTab";
+
+     tab.onmouseover = function() {
+      this.className = "hoverTab";
+     };
+
+     tab.onmouseout = function() {
+      this.className = "passiveTab";
+     };
+
+     tab.onclick = function() {
+  
+      var lastnum = this.id.charAt(this.id.length-1);
+      me.handleTabs(lastnum);
+
+     if (lastnum == 2) viewStreet(me.card, me.point);
+
+     else if (lastnum == 3) seeMiniMap(me.card, me.point);
+     };
+    }
+   }
+  }
+}
+
+
+function viewStreet(div, point) {
+
+  var g = google.maps;
+  var pano = new g.StreetViewPanorama(document.getElementById(div), {
+    position: point });
+  map.setStreetView(pano);
+}
+
+
+function seeMiniMap(div, point) {
+
+  var g = google.maps;
+  var mini = new g.Map(document.getElementById(div), {
+    center: point,
+    zoom: 18,
+    streetViewControl: false,
+    mapTypeId: "hybrid",
+    mapTypeControlOptions: {
+     style: g.MapTypeControlStyle.DROPDOWN_MENU
+    }
+  });
+}
+
+
+function createMarker(point, iw_content) {
+
+  var g = google.maps;
+  var marker = new g.Marker({
+    position: point, map: map,
+    clickable: true, draggable: false
+  });
+
+  g.event.addListener(marker, "click", function() {
+   infowindow.setContent(iw_content);
+   iw_content.style.display = "block";
+   infowindow.open(map, this); 
+  });
+  return marker;
+}
+
+
+function buildMap() { 
+
+  var g = google.maps;
+  var point1 = new g.LatLng(47.798202,3.5737810000000536);
+ 
+  var map_options = {
+   center: new g.LatLng(47.798202,3.5737810000000536),
+   zoom: 5,
+   mapTypeId: "roadmap",
+   streetViewControl: false,
+   mapTypeControlOptions: {
+    style: g.MapTypeControlStyle.DEFAULT,
+    mapTypeIds: [ g.MapTypeId.ROADMAP,
+     g.MapTypeId.SATELLITE,
+     g.MapTypeId.HYBRID,
+     g.MapTypeId.TERRAIN]
+   }
+  };
+  map = new g.Map(document.getElementById("map"), map_options);
+  infowindow = new g.InfoWindow();
+
+ 
+  var iw_content = document.getElementById("wrapper1");
+
+  var tabs = new TabCard("firstTabs", "firstCard", point1);
+  var marker1 = createMarker(point1, iw_content);
+
+
+  var iw_content = document.getElementById("wrapper2");
+  var tabs = new TabCard("secTabs", "secCard", point2);
+  var marker2 = createMarker(point2, iw_content);
+}
+
+
+</script>
+
+</body>
+</html>

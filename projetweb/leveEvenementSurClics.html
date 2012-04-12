@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+
+	<head>
+		<title>test API Google</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script> <script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+		<script type="text/javascript" src="/fancybox/jquery.easing-1.4.pack.js"></script>
+		<link rel="stylesheet" href="/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		
+		
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		
+		<script type="text/javascript">
+		// ce code permet de lever un évènement sur le clic d'un marqueur
+			function initialiser() {
+				var latlng = new google.maps.LatLng(46.779231, 6.659431);
+				var options = {
+					center: latlng,
+					zoom: 6,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				var carte = new google.maps.Map(document.getElementById("carte"), options);
+				
+				// on crée les marqueurs
+				var marqueur = new google.maps.Marker({position: new google.maps.LatLng(46.779231, 6.659431),map: carte});
+				
+				// on crée les évènements
+				google.maps.event.addListener(marqueur, 'click', function() { // (click, rightclick, dblclick, drag, dragstart, dragend, mouseover, mouseout)
+				alert("Le marqueur a été cliqué.");
+				});
+				
+				
+			}
+		</script>
+	</head>
+
+	<body onload="initialiser()">
+		<div id="carte" style="width:100%; height:100%"></div>
+	</body>
+</html>
