@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+	<script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBsF20HCb3-SX7z2fTV1UWa9rs6ytrPW8E&sensor=true">
+    </script>
+
+
+  <script type="text/javascript">
+
+  /* Déclaration des variables  */
+  var geocoder;
+  var map;
+  var infowindow = new google.maps.InfoWindow();
+  var marker;
+
+  /* Fonction d'initialisation de la map appelée au chargement de la page  */
+  function initialize() {
+    geocoder = new google.maps.Geocoder();
+    var latlng = new google.maps.LatLng(48.8566667, 2.3509871);
+    var myOptions = {
+      zoom: 6,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+  }
+
+  /* Fonction chargée de géocoder l'adresse  */
+  function codeAddress() {
+    var address = document.getElementById("adr").value;
+    geocoder.geocode( { 'address': address + ' France'}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var coords = results[0].geometry.location
+        map.setCenter(coords);
+        var marker = new google.maps.Marker({
+          map: map,
+          position: coords
+        });
+        document.getElementById('latlng').value = coords.lat()+','+coords.lng();
+        codeLatLng(coords.lat()+','+coords.lng());
+      } else {
+        alert("Le geocodage n\'a pu etre effectue pour la raison suivante: " + status);
+      }
+    });
+  }
+
+  /* Fonction de géocodage inversé (en fonction des coordonnées de l'adresse)  */
+  function codeLatLng(input) {
+    var latlngStr = input.split(",",2);
+    var lat = parseFloat(latlngStr[0]);
+    var lng = parseFloat(latlngStr[1]);
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+          map.setZoom(11);
+          marker = new google.maps.Marker({
+            position: latlng,
+            map: map
+          });
+          var elt = results[0].address_components;
+          for(i in elt){
+            if(elt[i].types[0] == 'postal_code')
+            document.getElementById('cp').value = elt[i].long_name;
+            if(elt[i].types[0] == 'locality')
+            document.getElementById('adr').value = elt[i].long_name;
+            if(elt[i].types[0] == 'administrative_area_level_2')
+            document.getElementById('dpt').value = elt[i].long_name;
+            if(elt[i].types[0] == 'country')
+            document.getElementById('pays').value = elt[i].long_name;
+          }
+          infowindow.setContent(results[0].formatted_address);
+          infowindow.open(map, marker);
+          map.setCenter(latlng);
+        }
+      } else {
+        alert("Geocoder failed due to: " + status);
+      }
+    });
+  }
+
+  function retrieve(){
+    var input = document.getElementById("latlng").value;
+    codeLatLng(input);
+  }
+</script>
+  </head>
+<div id="map_canvas" style="width:100%; height:100%"></div>
+  <body onload="initialize()">
+
+    <div>
+      latitude, longitude : <input id="latlng" type="text" value="48.3906042,-4.4869013">
+     <input type="button" value="Obtenir la ville..." onclick="retrieve()">
+      Ville / adresse : <input id="adr" type="text" value="">
+      <input type="button" value="Obtenir le code postal..." onclick="codeAddress()">
+      code postal : <input id="cp" type="text" value="">
+      département : <input id="dpt" type="text" value="">
+      pays : <input id="pays" type="text" value="">
+    </div>
+
+     
+  
+  
+    
+  </body>
+</html>
+

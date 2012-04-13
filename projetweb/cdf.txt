@@ -1,0 +1,44 @@
+
+Création d'un point :
+	connection obligatoire
+	creation a partire d'une adresse postale AJAX
+	remplire formulaire avec update en AJAX (lightBox)
+
+Quand Point crée (dblclique page lightBox);
+
+	bouton drag & drop du point pour positionnement plus precis AJAX.
+	modifier info AJAX (dans lightBox)
+	supprimer AJAX
+
+
+Afficher un point en fonction de la connection effectué :
+
+
+
+gerer les utilisateurs
+
+Carte : 
+	Consultation point double clique (lightbox)
+	quelques info dans le popup marquer avec onglets
+	total info dans light box dblclique
+	bar recherche et filtre .. avec liste sur coté droit
+
+
+Gestion de contact email ...
+
+Login :
+
+	admin :
+		affiche tous les points
+		creation 
+		validation
+		modification
+		gestion utilisateur
+
+	Gérant :
+		affiche tous les points
+		Création
+		modification des non validés
+
+	Public :
+		affiche point validé	
