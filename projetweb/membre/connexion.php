@@ -97,6 +97,4 @@ parent.window.location.reload(true);
 ?>
 		<div class="foot"><a href="<?php echo $url_home; ?>">Retour &agrave; l'accueil</a> - <a href="http://www.supportduweb.com/">Support du Web</a></div>
 	</body>
-	
-	coucou coucou test
 </html>
