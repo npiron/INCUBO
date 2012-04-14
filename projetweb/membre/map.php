@@ -22,8 +22,8 @@ include('config.php')
 		
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
 		
-		<script type="text/javascript">
-
+		<script type="text/javascript" language="JavaScript1.2" >
+			
 			var geocoder = new google.maps.Geocoder();
 			var lat, lng, addr, mapM;
 
