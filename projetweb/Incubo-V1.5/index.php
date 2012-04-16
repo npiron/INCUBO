@@ -24,22 +24,29 @@ include('config.php')
 		
 		<script type="text/javascript" language="JavaScript1.2" >
 			
-			
+			var marker;
 			
 			var geocoder = new google.maps.Geocoder();
-			var lat, lng, addr, mapM;
-
-			function markerM(mark, objmap){
-				mark = mark.getPosition();
-				lat = mark.lat();
-				lng = mark.lng();
+			var _latlng, addr, mapM;
+            
+			function currentmarker(mark, objmap){
+			    alert("function markerM ... ");
 				mapM = objmap;
-				createM();
+                _latlng = mark.getPosition();
 			}
 
 			function createM(){
 
-				alert(lat + " " + lng + mapM);
+				marker.setPosition(null);
+				
+				var save_marker = new google.maps.Marker({
+                  map: mapM,
+                  draggable: true,
+                  position: _latlng,
+                  
+                });
+                
+				
 
 			}
 
@@ -88,10 +95,10 @@ include('config.php')
 
 		        var infowindow = new google.maps.InfoWindow();
 
-		        var marker = new google.maps.Marker({
-		          map: map,
-    			  draggable: true
-		        });
+		        marker = new google.maps.Marker({
+                  map: map,
+                  draggable: true
+                });
 
 
 		        google.maps.event.addListener(autocomplete, 'place_changed', function() {
@@ -124,9 +131,11 @@ include('config.php')
 		          infowindow.open(map, marker);
 		          updateMarkerPosition(marker.getPosition());
 		          geocodePosition(marker.getPosition());
+		          currentmarker(marker, map);
 
 		        });
 
+                  
   
 				  google.maps.event.addListener(marker, 'dragstart', function() {
 				    //updateMarkerAddress('Dragging...');
@@ -140,6 +149,7 @@ include('config.php')
 				  google.maps.event.addListener(marker, 'dragend', function() {
 				    updateMarkerStatus('Drag ended');
 				    geocodePosition(marker.getPosition());
+				    currentmarker(marker, map);
 				  });
 }
 
@@ -153,8 +163,13 @@ include('config.php')
 
 
 		<div id="volet">
-			dzadadazda
-		<h1> Liste des site </h1>
+    		<h1> Liste des sites </h1>
+    		<br />
+    		<input id="searchTextField" type="text" size="150">  <br />                  
+            <div id="markerStatus">Click and drag the marker.</div>
+            <div id="info"></div>
+            <div id="address"></div><br />
+            <button id="creer" >Créer ce site</button>
 		</div>
 
 
@@ -165,11 +180,6 @@ include('config.php')
 		                <div id="top">
 		                    <a href="edit_infos.php">Modifier mes informations personnelles</a>
 		                    <a href="deconnection.php">Déconnection</a>
-						 	<input id="searchTextField" type="text" size="50">				 	
-							<span id="markerStatus">Click and drag the marker.</span>
-						    <span id="info"></span>
-						    <span id="address"></span>
-						    <button id="creer" >Créer ce site</button>
 						</div>
 		                <?php
 
@@ -257,6 +267,7 @@ include('config.php')
 						width: 505,
 						buttons: {
 							Ok: function() {
+							    createM();
 								$( this ).dialog( "close" );
 							}
 						}
