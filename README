@@ -1,0 +1,21 @@
+Repository Projet INCUBO
+
+License GSIE, Maison de l'entreprise a Auxerre
+
+Cet inventaire comporte des données sous forme de textes (descriptifs), de quelques données chiffrées (surface, datation) et des figures (plan, dessin d’objets, de statues). Pour l’instant le groupe ravaille sur 234 sites.
+1 - L’interface sera une carte de France, mais d’abor centrée sur les régions bourgogne et franche Comté sur laquelle apparaîtront l’ensemble des sites de l’inventaire d’abord de manière neutre (un point par site), puis avec plusieurs jeux :
+* de couleur : selon l’état de la fiche (absente, en cours, validée)
+* de symboles selon le choix de l’utilisateur :
+- leur nature (lieu de culte, sanctuaire, découverte isolée, site présumé…) ;
+- leur datation (par siècle, demi siècle) ;
+- le degré d’élaboration de la documentation qui leur est associée (fiche en cours d’élaboration, site non encore documenté, fiche validée)
+- autre (liste à préciser en réunion)
+2 – localisation : Les sites sont repérés par commune, ce qui est suffisant (et assure une protection vis à vis des pilleurs de sites). Il faudra penser aux communes, comme Autun ou Alesia, qui ont plusieurs sanctuaires (jusqu’à sept) et pour lesquels il faudra que les points puissent être distingués les uns des autres. (des points qui s’écartent les uns des autres quand on zoome ?)
+3 – Affichage : L’idée est de pouvoir afficher ensuite les données des fiches associées, soit directement –images et textes résumés- en cliquant sur le point-site, soit sous forme de pdf téléchargeables. 
+4 – interrogation : Des recherches devront être possibles sur la base de données associées, soit en sur les textes eux-mêmes, soit par mots-clés.
+5 – Evolution : Il faudra que l’on puisse y ajouter des sites au fur et à mesure de l’avancée de l’inventaire et de la validation des données par le gestionnaire. Un éventuel élargissement aux régions voisines doit être prévu.
+6 – trois niveaux d’accès : Il faut prévoir deux accès, un grand public (sans téléchargement, fiches validées seulement), un autre réservé aux contributeurs et un pour le(s) gestionnaire(s).
+7 – Hébergement : Il faut trouver un lieu d’hébergement.
+8 – Autres fonctions (en texte) : mode d’emploi / présentation du projet / contacts
+
+Pour voir un site analogue : http://phalombe.u-bourgogne.fr/cbma/
