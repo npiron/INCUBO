@@ -24,6 +24,8 @@ include('config.php')
 		
 		<script type="text/javascript" language="JavaScript1.2" >
 			
+			//FIXME aTTENTION
+			
 			
 			
 			var geocoder = new google.maps.Geocoder();
