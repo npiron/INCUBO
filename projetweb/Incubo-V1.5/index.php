@@ -14,9 +14,9 @@ include('config.php')
 		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
 
-			<script type="text/javascript" src="js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
-	<script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-	<link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+	   <script type="text/javascript" src="js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	   <script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+	   <link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 
 		 <link href="<?php echo $design; ?>/style.css" rel="stylesheet" title="Style" />
 		
@@ -25,9 +25,12 @@ include('config.php')
 		<script type="text/javascript" language="JavaScript1.2" >
 			
 			var marker;
-			
+			var infowindow;
 			var geocoder = new google.maps.Geocoder();
 			var _latlng, addr, mapM;
+            
+            
+            
             
 			function currentmarker(mark, objmap){
 			    alert("function markerM ... ");
@@ -35,19 +38,47 @@ include('config.php')
                 _latlng = mark.getPosition();
 			}
 
-			function createM(){
+			function createM(infoW){
 
 				marker.setPosition(null);
-				
+				alert("coucou");
 				var save_marker = new google.maps.Marker({
                   map: mapM,
                   draggable: true,
-                  position: _latlng,
-                  
+                  position: _latlng
                 });
-                
-				
+               // alert(infoW["titre"]);
+               
+               var text = [
+                  '<div id="InfoText">',
+                  '<div class="tabs"><ul><li><a href="#tab1">General</a></li>',
+                  '<li><a href="#tab2" id="SV">Street View</a></li></ul>',
+                  '<div id="tab1">',
+                  '</div>',
+                  '<div id="tab2">',
+                  '</div>',
+                  '</div>'
+                ].join('');
+  
+               infowindow = new google.maps.InfoWindow({
+                   content: text,
+                   maxWidth: 500 
+                });
 
+                
+                google.maps.event.addListener(save_marker, 'dblclick', function () {
+                    if (infowindow) infowindow.close();
+                    infowindow.open(mapM,save_marker);
+                });
+                google.maps.event.addListener(infowindow, 'domready', function () {
+                        $("#InfoText").tabs();
+                    });
+                                //$("#infobulle").css("display", "block");
+                infowindow.open(mapM, save_marker);
+                
+                /*google.maps.event.addListener(save_marker, 'dblclick', function() {
+                    infowindow.open(mapM,save_marker);
+                  });*/
 			}
 
 			function geocodePosition(pos) {
@@ -93,7 +124,7 @@ include('config.php')
 
 		        autocomplete.bindTo('bounds', map);
 
-		        var infowindow = new google.maps.InfoWindow();
+		        infowindow = new google.maps.InfoWindow();
 
 		        marker = new google.maps.Marker({
                   map: map,
@@ -137,9 +168,9 @@ include('config.php')
 
                   
   
-				  google.maps.event.addListener(marker, 'dragstart', function() {
-				    //updateMarkerAddress('Dragging...');
-				  });
+                 google.maps.event.addListener(marker, 'dblclick', function() {
+                    infowindow.open(map,marker);
+                  });
 				  
 				  google.maps.event.addListener(marker, 'drag', function() {
 				    updateMarkerStatus('Dragging...');
@@ -151,6 +182,10 @@ include('config.php')
 				    geocodePosition(marker.getPosition());
 				    currentmarker(marker, map);
 				  });
+				  
+				  google.maps.event.addListener(marker, 'dragstart', function() {
+                    //updateMarkerAddress('Dragging...');
+                  });
 }
 
 
@@ -203,38 +238,49 @@ include('config.php')
 		<div id="carte" style="width:100%; height:100%"></div>
 		<div id="dialog"> 
 
-								<form method="post" action="">
-									<div class="form_description">
-									</div>						
-									<ul >
+								<form method="post" action="">				
+									<ul>
 									<li>
 										<div id="latlong">ici</div>
 										<div id="adresse"></div>
-										<label class="description">Titre du site </label>
+										<label>Titre du site </label>
 										<div>
-											<input name="element_1" type="text" maxlength="255" value=""/> 
+											<input class="titre" name="element_1" type="text" maxlength="255" value=""/> 
 										</div> 
-										<label class="description">Adresse du site </label>
+										<label>Adresse du site </label>
 										<div>
-											<input name="element_2" type="text" maxlength="255" value=""/> 
+											<input class="adresse" name="element_2" type="text" maxlength="255" value=""/> 
 										</div> 
-										<label>Type de site </label>
-										<div>
-										<select> 
-											<option value="" selected="selected"></option>
-												<option value="1" >Sanctuaire</option>
-												<option value="2" >lieux de culte</option>
-										</select>
-										</div> 
+										
+										
 										<label>Date </label>
-		 
+		                                  <textarea class="date"></textarea>
 										<label>Description </label>
 										<div>
-											<textarea></textarea> 
+											<textarea class="description"></textarea> 
 										</div> 
 									</li>
 									</ul>
-								</form>	
+								</form>
+		</div> 
+		
+		<div id="infobulle">
+                <ul>
+                    <li><a href="#tabs-1">Nunc tincidunt</a></li>
+                    <li><a href="#tabs-2">Proin dolor</a></li>
+                    <li><a href="#tabs-3">Aenean lacinia</a></li>
+                </ul>
+                <div id="tabs-1">
+                    <p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.</p>
+                </div>
+                <div id="tabs-2">
+                    <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
+                </div>
+                <div id="tabs-3">
+                    <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
+                    <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
+                </div>
+		</div>
 									
 		</div>
 		<script type="text/javascript">
@@ -254,10 +300,6 @@ include('config.php')
 		});
 
 			$("#creer").click(function (){
-				/*var coor = marker.getPosition();
-				var ll = coor.lat() . coor.lng();
-				$("#latlong").innerHTML = ll;*/
-				//alert(marker.getPosition());
 				$("dialog").css("display", "block");
 				$( "#dialog" ).dialog({
 						modal: true,
@@ -267,8 +309,14 @@ include('config.php')
 						width: 505,
 						buttons: {
 							Ok: function() {
-							    createM();
-								$( this ).dialog( "close" );
+                                var infow = new Object();
+                                infow.titre = $(".titre").val();
+                                infow.adresse = $(".adresse").val();
+                                infow.date = $(".date").val();
+                                infow.description = $(".description").val();
+                                
+							    createM(infow);
+								$(this).dialog("close");
 							}
 						}
 					});
@@ -280,6 +328,10 @@ include('config.php')
  				}).mouseout(function() {
 	  				$(this).animate({backgroundColor:"darkgrey" },  200);
  				});
+ 				
+ 				$(function() {
+                    $("#infobulle").tabs();
+                });
 
 
 		</script>

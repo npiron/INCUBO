@@ -126,3 +126,17 @@ input
     border-radius: 5px;
 }
 
+#infobulle{
+display: none;
+width:450px;
+height: 350px;
+}
+
+#infotext {
+
+width:480px;
+height: 580px;
+
+}
+
+
