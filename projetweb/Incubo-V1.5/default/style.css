@@ -139,4 +139,28 @@ height: 580px;
 
 }
 
+#exemple{
+float: right;
+}
+
+.administration{
+    padding-bottom: 25px;
+    background-color : #D4D4D4; 
+    float: left;
+    height: 300px;
+    width: 100%;
+    bottom: 0px;
+    position: fixed;
+}
+.administration h1{
+    background-color: black;
+    color: white;
+    padding: 5px;
+    margin-bottom: 5px;
+
+}
+
+#carte{
+    position : relative;
+}
 

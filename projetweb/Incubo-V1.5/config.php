@@ -9,7 +9,7 @@ espace membre puisse fonctionner correctement.
 ******************************************************/
 
 //On se connecte a la base de donnee
-mysql_connect('localhost', 'root', '');
+$desc = mysql_connect('localhost', 'root', '');
 mysql_select_db('map');
 
 //Email du webmaster
