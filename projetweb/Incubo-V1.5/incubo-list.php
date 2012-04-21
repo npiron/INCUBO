@@ -34,7 +34,8 @@ include('config.php');
 			var infowindow;
 			var geocoder = new google.maps.Geocoder();
 			var _latlng, addr, mapM;
-            
+            var map;
+            var oTable;
 
 			function currentmarker(mark, objmap){
 			    alert("function markerM ... ");
@@ -74,21 +75,6 @@ include('config.php');
                infowindow = new google.maps.InfoWindow({
                    content: text,
                    maxWidth: 500 
-                });
-                alert(infoW["titre"]+infoW["adresse"]+infoW["date"]+infoW["description"]+infoW["lat"]+infoW["lng"]);
-                $.ajax({
-                      type: "POST",
-                      url: "creationM.php",
-                      data: {
-                          titre: infoW["titre"],
-                          adresse: infoW["adresse"],
-                          date: infoW["date"],
-                          description: infoW["description"],
-                          latitude: infoW["lat"],
-                          longitude: infoW["lng"]
-                         }
-                    }).done(function( msg ) {
-                      alert( "Data Saved: " + msg );
                 });
 
                 google.maps.event.addListener(save_marker, 'dblclick', function () {
@@ -135,6 +121,60 @@ include('config.php');
 			  //document.getElementById('address').innerHTML = str;
 			}
 
+            function createXmlHttpRequest() {
+                try {
+                    if (typeof ActiveXObject != 'undefined') {
+                        return new ActiveXObject('Microsoft.XMLHTTP');
+                    } else if (window["XMLHttpRequest"]) {
+                        return new XMLHttpRequest();
+                    }
+                } catch (e) {
+                    changeStatus(e);
+                }
+                return null;
+            };
+
+            function downloadUrl(url, callback) {
+                var status = -1;
+                var request = createXmlHttpRequest();
+                if (!request) {
+                    return false;
+                }
+            
+                request.onreadystatechange = function() {
+                    if (request.readyState == 4) {
+                        try {
+                            status = request.status;
+                        } catch (e) {
+                        }
+                        if (status == 200) {
+                            callback(request.responseText, request.status);
+                            request.onreadystatechange = function() {};
+                        }
+                    }
+                }
+                request.open('GET', url, true);
+                try {
+                    request.send(null);
+                } catch (e) {
+                    changeStatus(e);
+                }
+            };
+
+            function xmlParse(str) {
+              if (typeof ActiveXObject != 'undefined' && typeof GetObject != 'undefined') {
+                var doc = new ActiveXObject('Microsoft.XMLDOM');
+                doc.loadXML(str);
+                return doc;
+              }
+            
+              if (typeof DOMParser != 'undefined') { 
+                return (new DOMParser()).parseFromString(str, 'text/xml');
+              }
+            
+              return createElement('div', null);
+            }
+            
 		    function initialize() {
 
 		        var mapOptions = {
@@ -142,137 +182,150 @@ include('config.php');
 		          zoom: 5,
 		          mapTypeId: google.maps.MapTypeId.ROADMAP
 		        };
-		        var map = new google.maps.Map(document.getElementById('carte'),mapOptions);
+		        map = new google.maps.Map(document.getElementById('carte'),mapOptions);
+	
 		        mapM = map; // externalisation du pointeur map
-		        var input = document.getElementById('searchTextField');
-		        var autocomplete = new google.maps.places.Autocomplete(input);
-
-		        autocomplete.bindTo('bounds', map);
 
 		        infowindow = new google.maps.InfoWindow();
 
-		        marker = new google.maps.Marker({
-                  map: map,
-                  draggable: true
+                downloadUrl("initMarker.php", function(data) { 
+                   var xml = xmlParse(data);
+                   var markers = xml.documentElement.getElementsByTagName("marker");
+                   
+                   
+                   for (var i = 0; i < markers.length; i++) {
+                       
+                    createMarker(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("lng")), markers[i].getAttribute('titre'), markers[i].getAttribute('description'));
+                   }
+                   
+                   setTimeout(function() {
+                       $("#loader").css("display", "none");
+                       $("#carte").css("visibility", "visible");
+                   }, 3000);
+                   
+                  });
+              
+}
+
+            function createMarker(lat, lng, titre, description){
+    
+                  var latlng = new google.maps.LatLng(lat, lng);
+                  var marker = new google.maps.Marker({
+                   position: latlng,
+                   map: map,
+                   draggable: true
+              });
+              
+              var text = [
+                  '<div id="InfoText">',
+                  '<div class="tabs"><ul><li><a href="#tab1">General</a></li>',
+                  '<li><a href="#tab2" id="SV">Street View</a></li></ul>',
+                  '<div id="tab1">',
+                  titre+'</br>',
+                  description+'</br>',
+                  '</div>',  
+                  '<div id="tab2">',
+                  'Carouselle d\'image',
+                  '</div>',
+                  '</div>'
+                ].join('');
+  
+
+               infowindow = new google.maps.InfoWindow({
+                   content: text,
+                   maxWidth: 500 
                 });
 
+                google.maps.event.addListener(marker, 'dblclick', function () {
+                    if (infowindow) infowindow.close();
+                    infowindow.open(map,marker);
+                });
+                google.maps.event.addListener(infowindow, 'domready', function () {
+                        $("#InfoText").tabs();
+                    });
+                                
 
-		        google.maps.event.addListener(autocomplete, 'place_changed', function() {
-		          infowindow.close();
-		          var place = autocomplete.getPlace();
-		          if (place.geometry.viewport) {
-		            map.fitBounds(place.geometry.viewport);
-		          } 
-		          else {
-		            map.setCenter(place.geometry.location);
-		            map.setZoom(10);  // Why 17? Because it looks good.
-		            geocodePosition(marker.getPosition());
-
-		          }
-
-		          marker.setPosition(place.geometry.location);
-
-		          var address = '';
-		          if (place.address_components) {
-		            address = [(place.address_components[0] &&
-		                        place.address_components[0].short_name || ''),
-		                       (place.address_components[1] &&
-		                        place.address_components[1].short_name || ''),
-		                       (place.address_components[2] &&
-		                        place.address_components[2].short_name || '')
-		                      ].join(' ');
-		          }
-
-		          infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-		          infowindow.open(map, marker);
-		          updateMarkerPosition(marker.getPosition());
-		          geocodePosition(marker.getPosition());
-		          currentmarker(marker, map);
-
-		        });
-
-                  
-  
-                 google.maps.event.addListener(marker, 'dblclick', function() {
+              google.maps.event.addListener(marker, 'dblclick', function() {
                     infowindow.open(map,marker);
                   });
-				  
-				  google.maps.event.addListener(marker, 'drag', function() {
-				    updateMarkerStatus('Dragging...');
-				    updateMarkerPosition(marker.getPosition());
-				  });
-				  
-				  google.maps.event.addListener(marker, 'dragend', function() {
-				    updateMarkerStatus('Drag ended');
-				    geocodePosition(marker.getPosition());
-				    currentmarker(marker, map);
-				  });
-				  
-				  google.maps.event.addListener(marker, 'dragstart', function() {
+                /*  
+                  google.maps.event.addListener(marker, 'drag', function() {
+                    updateMarkerStatus('Dragging...');
+                    updateMarkerPosition(marker.getPosition());
+                  });
+                  
+                  google.maps.event.addListener(marker, 'dragend', function() {
+                    updateMarkerStatus('Drag ended');
+                    geocodePosition(marker.getPosition());
+                    currentmarker(marker, map);
+                  });
+                  
+                  google.maps.event.addListener(marker, 'dragstart', function() {
                     //updateMarkerAddress('Dragging...');
                   });
-}
+ */
+            }
 
-        var oTable;
- 
-$(document).ready(function() {
-    
-        var haut = (window.innerHeight)-358;
-    $("#carte").css("height", haut);
-    
-    oTable = $('#example').dataTable( {
-                    "sScrollY": "200px",
-                    "bPaginate": false,
-                    "bScrollCollapse": true,
-                    "sAjaxSource" : 'initList.php'
+            window.onresize = function(event) {
+                var haut = (window.innerHeight)-210;
+                $("#carte").css("height", haut);
+            }       
+             
+            $(document).ready(function() {
+                
                     
-    } );    
-                    
-              
-    
-    /* Add a click handler to the rows - this could be used as a callback */
-   
-    $("#example tbody tr").hover( function( e ) {
-        if ( $(this).hasClass('hightlight') ) {
-            $(this).removeClass('hightlight');
-        }
-        else {
-            oTable.$('tr.hightlight').removeClass('hightlight');
-            $(this).addClass('hightlight');
-        }
-    });
-    
-        $("#example tbody tr").click( function( e ) {
-        if ( $(this).hasClass('row_selected') ) {
-            $(this).removeClass('row_selected');
-        }
-        else {
-            oTable.$('tr.row_selected').removeClass('row_selected');
-            $(this).addClass('row_selected');
-        }
-    });
-     
-     
-});
+                    var haut = (window.innerHeight)-210;
+                $("#carte").css("height", haut);
+                
+                oTable = $('#example').dataTable( {
+                                "sScrollY": "200px",
+                                "bPaginate": false,
+                                "bScrollCollapse": true,
+                                "sAjaxSource" : 'initList.php'
+                                
+                } );    
+                                
+                          
+                
+                /* Add a click handler to the rows - this could be used as a callback */
+               
+                $("#example tbody tr").hover( function( e ) {
+                    if ( $(this).hasClass('hightlight') ) {
+                        $(this).removeClass('hightlight');
+                    }
+                    else {
+                        oTable.$('tr.hightlight').removeClass('hightlight');
+                        $(this).addClass('hightlight');
+                    }
+                });
+                
+                    $("#example tbody tr").click( function( e ) {
+                    if ( $(this).hasClass('row_selected') ) {
+                        $(this).removeClass('row_selected');
+                    }
+                    else {
+                        oTable.$('tr.row_selected').removeClass('row_selected');
+                        $(this).addClass('row_selected');
+                    }
+                });
+                 
+                 
+            });
 
-/* Get the rows which are currently selected */
-function fnGetSelected( oTableLocal )
-{
-    return oTableLocal.$('tr.row_selected');
-}
+            /* Get the rows which are currently selected */
+            function fnGetSelected( oTableLocal )
+            {
+                return oTableLocal.$('tr.row_selected');
+            }
 
-window.onresize = function(event) {
-    var haut = (window.innerHeight)-358;
-    $("#carte").css("height", haut);
-}
-        
-        
-        
-            
         </script>
 	</head>
 
 	<body onload="initialize()">
+
+        <div id="loader">
+            
+        </div>
 
 		<?php
 		if(isset($_SESSION['username']))
@@ -301,6 +354,7 @@ window.onresize = function(event) {
 		                <?php
 		             }
 		?>
+		
 		<div id="carte" style="width:100%; height:100%"></div>
 
 
@@ -308,7 +362,7 @@ window.onresize = function(event) {
 
 
         <div class="administration">
-            <h1> Liste des sites / lieux </h1>
+            <h3> Liste des sites / lieux </h3>
 
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
     <thead>
@@ -317,9 +371,6 @@ window.onresize = function(event) {
              <th>Two</th>
              <th>Three</th>
              <th>Four</th>
-             <th>Five</th>
-             <th>Six</th>
-             <th>Seven</th>
          </tr>
      </thead>
      <tbody>
@@ -327,425 +378,7 @@ window.onresize = function(event) {
      </tbody>
     
 </table>
-    
-           
-<table style="display: none;" cellspacing="0" border="0" class="displayee" id="exampleee">
-    <thead>
-        <tr>
-            <th>Rendering engine</th>
-            <th>Browser</th>
-            <th>Platform(s)</th>
-            <th>Engine version</th>
-            <th>CSS grade</th>
-        </tr>
-    </thead>
 
-    <tbody>
-        <tr class="odd gradeX">
-            <td>Trident</td>
-            <td>Internet
-                 Explorer 4.0</td>
-            <td>Win 95+</td>
-            <td class="center">4</td>
-            <td class="center">X</td>
-        </tr>
-        <tr class="odd gradeC">
-            <td>Trident</td>
-            <td>Internet
-                 Explorer 5.0</td>
-            <td>Win 95+</td>
-            <td class="center">5</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="odd gradeA">
-            <td>Trident</td>
-            <td>Internet
-                 Explorer 5.5</td>
-            <td>Win 95+</td>
-            <td class="center">5.5</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="odd gradeA">
-            <td>Trident</td>
-            <td>Internet
-                 Explorer 6</td>
-            <td>Win 98+</td>
-            <td class="center">6</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="odd gradeA">
-            <td>Trident</td>
-            <td>Internet Explorer 7</td>
-            <td>Win XP SP2+</td>
-            <td class="center">7</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="odd gradeA">
-            <td>Trident</td>
-            <td>AOL browser (AOL desktop)</td>
-            <td>Win XP</td>
-            <td class="center">6</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Firefox 1.0</td>
-            <td>Win 98+ / OSX.2+</td>
-            <td class="center">1.7</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Firefox 1.5</td>
-            <td>Win 98+ / OSX.2+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Firefox 2.0</td>
-            <td>Win 98+ / OSX.2+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Firefox 3.0</td>
-            <td>Win 2k+ / OSX.3+</td>
-            <td class="center">1.9</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Camino 1.0</td>
-            <td>OSX.2+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Camino 1.5</td>
-            <td>OSX.3+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Netscape 7.2</td>
-            <td>Win 95+ / Mac OS 8.6-9.2</td>
-            <td class="center">1.7</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Netscape Browser 8</td>
-            <td>Win 98SE+</td>
-            <td class="center">1.7</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Netscape Navigator 9</td>
-            <td>Win 98+ / OSX.2+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.0</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.1</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.1</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.2</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.2</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.3</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.3</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.4</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.4</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.5</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.5</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.6</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">1.6</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.7</td>
-            <td>Win 98+ / OSX.1+</td>
-            <td class="center">1.7</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Mozilla 1.8</td>
-            <td>Win 98+ / OSX.1+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Seamonkey 1.1</td>
-            <td>Win 98+ / OSX.2+</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Gecko</td>
-            <td>Epiphany 2.20</td>
-            <td>Gnome</td>
-            <td class="center">1.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>Safari 1.2</td>
-            <td>OSX.3</td>
-            <td class="center">125.5</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>Safari 1.3</td>
-            <td>OSX.3</td>
-            <td class="center">312.8</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>Safari 2.0</td>
-            <td>OSX.4+</td>
-            <td class="center">419.3</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>Safari 3.0</td>
-            <td>OSX.4+</td>
-            <td class="center">522.1</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>OmniWeb 5.5</td>
-            <td>OSX.4+</td>
-            <td class="center">420</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>iPod Touch / iPhone</td>
-            <td>iPod</td>
-            <td class="center">420.1</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Webkit</td>
-            <td>S60</td>
-            <td>S60</td>
-            <td class="center">413</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 7.0</td>
-            <td>Win 95+ / OSX.1+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 7.5</td>
-            <td>Win 95+ / OSX.2+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 8.0</td>
-            <td>Win 95+ / OSX.2+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 8.5</td>
-            <td>Win 95+ / OSX.2+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 9.0</td>
-            <td>Win 95+ / OSX.3+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 9.2</td>
-            <td>Win 88+ / OSX.3+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera 9.5</td>
-            <td>Win 88+ / OSX.3+</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Opera for Wii</td>
-            <td>Wii</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Nokia N800</td>
-            <td>N800</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Presto</td>
-            <td>Nintendo DS browser</td>
-            <td>Nintendo DS</td>
-            <td class="center">8.5</td>
-            <td class="center">C/A<sup>1</sup></td>
-        </tr>
-        <tr class="gradeC">
-            <td>KHTML</td>
-            <td>Konqureror 3.1</td>
-            <td>KDE 3.1</td>
-            <td class="center">3.1</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeA">
-            <td>KHTML</td>
-            <td>Konqureror 3.3</td>
-            <td>KDE 3.3</td>
-            <td class="center">3.3</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeA">
-            <td>KHTML</td>
-            <td>Konqureror 3.5</td>
-            <td>KDE 3.5</td>
-            <td class="center">3.5</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeX">
-            <td>Tasman</td>
-            <td>Internet Explorer 4.5</td>
-            <td>Mac OS 8-9</td>
-            <td class="center">-</td>
-            <td class="center">X</td>
-        </tr>
-        <tr class="gradeC">
-            <td>Tasman</td>
-            <td>Internet Explorer 5.1</td>
-            <td>Mac OS 7.6-9</td>
-            <td class="center">1</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeC">
-            <td>Tasman</td>
-            <td>Internet Explorer 5.2</td>
-            <td>Mac OS 8-X</td>
-            <td class="center">1</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Misc</td>
-            <td>NetFront 3.1</td>
-            <td>Embedded devices</td>
-            <td class="center">-</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeA">
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td class="center">-</td>
-            <td class="center">A</td>
-        </tr>
-        <tr class="gradeX">
-            <td>Misc</td>
-            <td>Dillo 0.8</td>
-            <td>Embedded devices</td>
-            <td class="center">-</td>
-            <td class="center">X</td>
-        </tr>
-        <tr class="gradeX">
-            <td>Misc</td>
-            <td>Links</td>
-            <td>Text only</td>
-            <td class="center">-</td>
-            <td class="center">X</td>
-        </tr>
-        <tr class="gradeX">
-            <td>Misc</td>
-            <td>Lynx</td>
-            <td>Text only</td>
-            <td class="center">-</td>
-            <td class="center">X</td>
-        </tr>
-        <tr class="gradeC">
-            <td>Misc</td>
-            <td>IE Mobile</td>
-            <td>Windows Mobile 6</td>
-            <td class="center">-</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeC">
-            <td>Misc</td>
-            <td>PSP browser</td>
-            <td>PSP</td>
-            <td class="center">-</td>
-            <td class="center">C</td>
-        </tr>
-        <tr class="gradeU">
-            <td>Other browsers</td>
-            <td>All others</td>
-            <td>-</td>
-            <td class="center">-</td>
-            <td class="center">U</td>
-        </tr>
-    </tbody>
-</table>
          </div>
 
             
@@ -779,25 +412,7 @@ window.onresize = function(event) {
 									</ul>
 								</form>
 		</div> 
-		
-		<div id="infobulle">
-                <ul>
-                    <li><a href="#tabs-1">Nunc tincidunt</a></li>
-                    <li><a href="#tabs-2">Proin dolor</a></li>
-                    <li><a href="#tabs-3">Aenean lacinia</a></li>
-                </ul>
-                <div id="tabs-1">
-                    <p>Proin elit arcu, rutrum commodo, vehicula tempus, commodo a, risus. Curabitur nec arcu. Donec sollicitudin mi sit amet mauris. Nam elementum quam ullamcorper ante. Etiam aliquet massa et lorem. Mauris dapibus lacus auctor risus. Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam sodales tortor vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin. Sed ut dolor nec orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.</p>
-                </div>
-                <div id="tabs-2">
-                    <p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>
-                </div>
-                <div id="tabs-3">
-                    <p>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan, mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat nec, luctus a, lacus.</p>
-                    <p>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi. Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis, pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque. Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac, tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit. Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</p>
-                </div>
-		</div>
-									
+						
 		</div>
 		<script type="text/javascript">
 

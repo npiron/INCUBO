@@ -147,12 +147,12 @@ float: right;
     padding-bottom: 25px;
     background-color : #D4D4D4; 
     float: left;
-    height: 300px;
+    height: 160px;
     width: 100%;
     bottom: 0px;
     position: fixed;
 }
-.administration h1{
+.administration h3{
     background-color: black;
     color: white;
     padding: 5px;
@@ -162,5 +162,17 @@ float: right;
 
 #carte{
     position : relative;
+    visibility: hidden;
 }
 
+#loader{
+background-image: url("../media/images/ajax-loader.gif");
+position: fixed;
+margin: auto;
+height: 66px;
+width: 66px;
+left:50%;
+top:20%;
+z-index: 5;
+
+}
