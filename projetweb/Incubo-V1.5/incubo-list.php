@@ -20,7 +20,7 @@ include('config.php');
 	   <link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 	   
 	   
-	            <link type="text/css" rel="stylesheet" href="media/css/demo_table.css" />
+	    <link type="text/css" rel="stylesheet" href="media/css/demo_table.css" />
         <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
         <script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
 
@@ -278,7 +278,7 @@ include('config.php');
                 $("#carte").css("height", haut);
                 
                 oTable = $('#example').dataTable( {
-                                "sScrollY": "200px",
+                                "sScrollY": "360px",
                                 "bPaginate": false,
                                 "bScrollCollapse": true,
                                 "sAjaxSource" : 'initList.php'
@@ -289,7 +289,8 @@ include('config.php');
                 
                 /* Add a click handler to the rows - this could be used as a callback */
                
-                $("#example tbody tr").hover( function( e ) {
+                $("#example tbody tr").live('hover', function () {
+     
                     if ( $(this).hasClass('hightlight') ) {
                         $(this).removeClass('hightlight');
                     }
@@ -297,9 +298,22 @@ include('config.php');
                         oTable.$('tr.hightlight').removeClass('hightlight');
                         $(this).addClass('hightlight');
                     }
+                    
                 });
                 
-                    $("#example tbody tr").click( function( e ) {
+                $("#example tbody tr").live('click', function () {
+                    
+                    var nR = $('#example').dataTable().fnGetPosition(this);     
+                    var oT = document.getElementById('example');
+                    nR++;
+                    //var rowLength = oT.rows.length;
+                    var lat = oT.rows[nR].cells[1].childNodes[0].data;
+                    var lng = oT.rows[nR].cells[2].childNodes[0].data;
+                    //alert(lat + "   " + lng);
+                    
+                    var center = new google.maps.LatLng(lat, lng);
+                    map.setCenter(center);
+                    map.setZoom(10);
                     if ( $(this).hasClass('row_selected') ) {
                         $(this).removeClass('row_selected');
                     }

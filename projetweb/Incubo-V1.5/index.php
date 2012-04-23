@@ -207,6 +207,11 @@ include('config.php')
                   google.maps.event.addListener(marker, 'dragstart', function() {
                     //updateMarkerAddress('Dragging...');
                   });
+                  
+                  setTimeout(function() {
+                       $("#loader").css("display", "none");
+                       $("#carte").css("visibility", "visible");
+                   }, 3000);
 }
 
 
