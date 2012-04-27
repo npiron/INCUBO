@@ -64,6 +64,7 @@ input
 
  #dialog{
   	display: none;
+  	z-index: 10;
  }
 
  #top ul {
@@ -102,6 +103,11 @@ input
 }
 
 
+#volet #markerStatus, #info, #adresse{
+text-align: center;
+    width: 300px;
+    padding: 2px;
+}
 #volet{
     background-color: rgba(0, 0, 0, 0.9);
 	right : 5px;
@@ -175,4 +181,9 @@ left:50%;
 top:20%;
 z-index: 5;
 
+}
+.ui-dialog-titlebar { display:none; }
+
+#radio {
+margin-bottom: 10px;
 }

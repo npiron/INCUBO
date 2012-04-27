@@ -8,20 +8,22 @@ include('config.php');
 		<title>test API Google</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-		<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />	
-		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-		<script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
+
 
 	   <script type="text/javascript" src="js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
 	   <script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 	   <link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
 	   
 	   
+	   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/smoothness/jquery-ui.css" />
+
+	   
+	   
 	    <link type="text/css" rel="stylesheet" href="media/css/demo_table.css" />
-        <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
         <script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
 
 		 <link href="<?php echo $design; ?>/style.css" rel="stylesheet" title="Style" />
@@ -29,6 +31,7 @@ include('config.php');
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
 		
 		<script type="text/javascript" language="JavaScript1.2" >
+
 			
 			var marker;
 			var infowindow;
@@ -76,7 +79,6 @@ include('config.php');
                    content: text,
                    maxWidth: 500 
                 });
-
                 google.maps.event.addListener(save_marker, 'dblclick', function () {
                     if (infowindow) infowindow.close();
                     infowindow.open(mapM,save_marker);
@@ -198,10 +200,12 @@ include('config.php');
                     createMarker(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("lng")), markers[i].getAttribute('titre'), markers[i].getAttribute('description'));
                    }
                    
-                   setTimeout(function() {
-                       $("#loader").css("display", "none");
+                  setTimeout(function() {
+                      $("#loader").css("display", "none");
                        $("#carte").css("visibility", "visible");
-                   }, 3000);
+                  }, 1000);
+                       
+                
                    
                   });
               
@@ -237,18 +241,26 @@ include('config.php');
                 });
 
                 google.maps.event.addListener(marker, 'dblclick', function () {
-                    if (infowindow) infowindow.close();
-                    infowindow.open(map,marker);
+                    largeurbox = 400;
+                var larg = ((window.innerWidth)/2)-(largeurbox/2);
+                $("#dialog").css("display", "block");
+                    $("#dialog").dialog({
+                            modal: true,
+                            draggable : true,
+                            resizable : true,
+                            position : [eval(larg),100],
+                            width: largeurbox
+                            
+
+                    });
                 });
+                
+                
                 google.maps.event.addListener(infowindow, 'domready', function () {
                         $("#InfoText").tabs();
                     });
-                                
-
-              google.maps.event.addListener(marker, 'dblclick', function() {
-                    infowindow.open(map,marker);
-                  });
-                /*  
+                    
+               /*                                  
                   google.maps.event.addListener(marker, 'drag', function() {
                     updateMarkerStatus('Dragging...');
                     updateMarkerPosition(marker.getPosition());
@@ -337,6 +349,35 @@ include('config.php');
 
 	<body onload="initialize()">
 
+<div id="dialog"> 
+
+ <form method="post" action="">              
+                                    <ul>
+                                    <li>
+                                        <div id="lat"></div>
+                                        <div id="lng"></div>
+                                        <div id="adresse"></div>
+                                        <label>Titre du site </label>
+                                        <div>
+                                            <input class="titre" name="element_1" type="text" maxlength="255" value=""/> 
+                                        </div> 
+                                        <label>Adresse du site </label>
+                                        <div>
+                                            <input class="adresse" name="element_2" type="text" maxlength="255" value=""/> 
+                                        </div> 
+
+                                        <label>Date </label>
+                                          <textarea class="date"></textarea>
+                                        <label>Description </label>
+                                        <div>
+                                            <textarea class="description"></textarea> 
+                                        </div> 
+                                    </li>
+                                    </ul>
+                                </form>
+        </div> 
+
+
         <div id="loader">
             
         </div>
@@ -399,33 +440,7 @@ include('config.php');
 
 
 
-		<div id="dialog"> 
-
-								<form method="post" action="">				
-									<ul>
-									<li>
-										<div id="lat"></div>
-										<div id="lng"></div>
-										<div id="adresse"></div>
-										<label>Titre du site </label>
-										<div>
-											<input class="titre" name="element_1" type="text" maxlength="255" value=""/> 
-										</div> 
-										<label>Adresse du site </label>
-										<div>
-											<input class="adresse" name="element_2" type="text" maxlength="255" value=""/> 
-										</div> 
-
-										<label>Date </label>
-		                                  <textarea class="date"></textarea>
-										<label>Description </label>
-										<div>
-											<textarea class="description"></textarea> 
-										</div> 
-									</li>
-									</ul>
-								</form>
-		</div> 
+		
 						
 		</div>
 		<script type="text/javascript">
@@ -444,7 +459,7 @@ include('config.php');
 				'type'				:'iframe',
 		});
 
-			$("#creer").click(function (){
+			/*$("#creer").click(function (){
 				$("dialog").css("display", "block");
 				$( "#dialog" ).dialog({
 						modal: true,
@@ -468,6 +483,9 @@ include('config.php');
 						}
 					});
 				});
+*/
+
+
 
 			
 				$("#top #menu").mouseover(function() {
