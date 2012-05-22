@@ -64,7 +64,6 @@ input
 
  #dialog{
   	display: none;
-  	z-index: 10;
  }
 
  #top ul {
@@ -190,4 +189,9 @@ margin-bottom: 10px;
 
 #fichier{
     width: 350px;
+}
+
+#fancybox-content {
+
+background: url(../images/login-box-back.png) no-repeat left top;
 }

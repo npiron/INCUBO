@@ -22,23 +22,5 @@ if($total) {
 echo "{\"aaData\": [";
 echo substr($rep,0,-1);
 echo "]}"
- /*
- while($row = mysql_fetch_array($q)){
-
-  echo "myarray[".$i."]='".$row['id']."';";
-      $i++;
-
- }
-
- for($i=0; $i < mysql_fetch_lengths($q); $i++)
-{
-     if($sortie[$i]==$_POST["Pseudo"])
-     {
-          $trouve = true;
-          break;  
-     }
-}
-
-*/
 
 ?>

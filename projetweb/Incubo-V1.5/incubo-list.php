@@ -422,8 +422,8 @@ include('config.php');
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
     <thead>
          <tr>
-             <th>One</th>
-             <th>Two</th>
+             <th>Code site</th>
+             <th></th>
              <th>Three</th>
              <th>Four</th>
          </tr>

@@ -6,7 +6,6 @@ include('config.php');
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link href="<?php echo $design; ?>/style.css" rel="stylesheet" title="Style" />
-		<link href="login-box.css" rel="stylesheet" type="text/css" />
         <title>Connection</title>
     </head>
     <body>
@@ -82,25 +81,20 @@ parent.window.location.reload(true);
 	}
 	//On affiche le formulaire
 ?>
-<div>
-
-
-<div id="login-box">
-
-<H2>Connexion</H2>
-Veuillez entrer vos identifiants pour vous connecter:
-<br />
-<br />
-<div id="login-box-name" style="margin-top:20px;">Login :</div><div id="login-box-field" value="<?php echo htmlentities($ousername, ENT_QUOTES, 'UTF-8'); ?>" style="margin-top:20px;"><input name="q" class="form-login" title="Username" value="" size="30" maxlength="2048" /></div>
-<div id="login-box-name">Password :</div><div id="login-box-field"><input name="q" type="password" class="form-login" title="Password" value="" size="30" maxlength="2048" /></div>
-<br />
-<br />
-<br />
-<a href="#"><img src="images/login-btn.png" width="103" height="42" style="margin-left:90px;" /></a>
+<div class="content">
+    <form action="connexion.php" method="post">
+        Veuillez entrer vos identifiants pour vous connecter:<br />
+        <div class="center">
+            <label for="username">Nom d'utilisateur</label><input type="text" name="username" id="username" value="<?php echo htmlentities($ousername, ENT_QUOTES, 'UTF-8'); ?>" /><br />
+            <label for="password">Mot de passe</label><input type="password" name="password" id="password" /><br />
+            <input type="submit" value="Connection" />
+		</div>
+    </form>
+</div>
 <?php
 	}
 }
 ?>
-		
+		<div class="foot"><a href="<?php echo $url_home; ?>">Retour &agrave; l'accueil</a> - <a href="http://www.supportduweb.com/">Support du Web</a></div>
 	</body>
 </html>

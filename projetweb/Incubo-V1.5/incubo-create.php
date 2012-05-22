@@ -138,7 +138,7 @@ include('config.php')
                 marker = new google.maps.Marker({
                     map : map,
                     draggable : true,
-                    icon : japanese
+                    position: new google.maps.LatLng(47.8688, 2.2195)
                 });
 
                 google.maps.event.addListener(autocomplete, 'place_changed', function() {
@@ -223,8 +223,11 @@ if(isset($_SESSION['username']))
 {
         ?>
         <div id="top">
-            <a href="edit_infos.php">Modifier mes informations personnelles</a>
+            <a href="edit_infos.php">Modifier</a>
             <a href="deconnection.php">Déconnection</a>
+            <span style="float: right; padding-right: 10px;">Bienvenue <?php 
+                echo $_SESSION['username'];
+                ?></span>
         </div>
         <?php
 
@@ -241,7 +244,7 @@ if(isset($_SESSION['username']))
                     <span id="incubo">Incubo </span>
                 </li>
                 <li>
-                    <a id="menu" class="site" href="connexion.php?iframe" class="connection">Connection</a>
+                    <a id="menu" class="site" href="connexion.php" class="connection">Connection</a>
                 </li>
                 <li>
                     <a id="menu" href="profile.php">Administration</a>
@@ -292,42 +295,42 @@ if(isset($_SESSION['username']))
                             <table>
                                 <tr>
                                     <td><img src="media/images/prayer.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     prayer</td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/cathedral.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     cathedral</td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/catholicgrave.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     catholicgrave</td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/cemetary.png" />
-                                    <input name="icon"id="radio" class="radio" type="radio" />
+                                    <input name="icon"id="radio" type="radio" />
                                     cemetary</td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/chapel-2.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/church-2.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/convent-2.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio" type="radio" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><img src="media/images/cross-2.png" />
-                                    <input name="icon" id="radio" class="radio" type="radio" />
+                                    <input name="icon" id="radio"  type="radio" />
                                     </td>
                                 </tr>
                             </table>
@@ -356,11 +359,11 @@ if(isset($_SESSION['username']))
                                 'transitionIn' : 'elastic',
                                 'transitionOut' : 'elastic',
                                 'overlayOpacity' : 0.7,
-                                'zoomSpeedIn' : 1500,
-                                'zoomSpeedOut' : 1500,
-                                'width' : 450,
-                                'height' : 400,
-                                'type' : 'iframe',
+                                'zoomSpeedIn' : 3500,
+                                'zoomSpeedOut' : 3500,
+                                'width' : 425,
+                                'height' : 350,
+                                'type' : 'iframe'
                             });
                             
 
@@ -416,10 +419,10 @@ if(isset($_SESSION['username']))
                 while($file = readdir($dir)) {
                     if($file != '.' && $file != '..' && !is_dir($dirname.$file))
                     {
-                        echo '<a href="'.$dirname.$file.'">'.$file.'</a>';
+                        //echo '<a href="'.$dirname.$file.'">'.$file.'</a>';
                         echo '
                         
-                        <script type="text/javascript">$(\'#fichier\').append(new Option("'.$file.'", "'.$file.'", false, true));</script>
+                        <script type="text/javascript">$(\'#fichier\').append(new Option("'.$file.'", "'.$file.'", false, false));</script>
                         
                         ';
 
