@@ -4,7 +4,8 @@ include('config.php')
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
     <head>
         <title>test API Google</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <meta charset="UTF-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
         <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
@@ -14,8 +15,18 @@ include('config.php')
         <script type="text/javascript" src="js/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
         <script type="text/javascript" src="js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
         <link rel="stylesheet" type="text/css" href="js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
-        <link href="<?php echo $design;?>/style.css" rel="stylesheet" title="Style" />
+        <link href="<?php echo $design; ?>/style.css" rel="stylesheet" title="Style" />
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+        
+        
+        <link rel="stylesheet" type="text/css" href="css/scrollbars.css" />
+        <link rel="stylesheet" type="text/css" href="css/scrollbars-black.css" />
+        <script src="js/aplweb.scrollbars.js"></script>
+        <script src="http://threedubmedia.googlecode.com/files/jquery.event.drag-2.0.min.js"></script>
+        <script src="http://github.com/cowboy/jquery-resize/raw/v1.1/jquery.ba-resize.min.js"></script>
+        <script src="http://remysharp.com/demo/mousehold.js"></script>
+        <script src="https://raw.github.com/brandonaaron/jquery-mousewheel/master/jquery.mousewheel.js"></script>
+        
         <script type="text/javascript" language="JavaScript1.2" >
             var marker;
             var infowindow;
@@ -45,6 +56,26 @@ include('config.php')
                 mapM = objmap;
                 _latlng = mark.getPosition();
             }
+
+            function choisirselect(select) {
+                if(select.value == 'choix') {
+                    var choix = document.createElement('input');
+                    select.form.onsubmit = function() {
+                        var option = document.createElement('option');
+                        option.innerHTML = choix.value;
+                        option.value = choix.value.substring(0, 2);
+                        choix.parentNode.replaceChild(select, choix);
+                        select.insertBefore(option, select.firstChild);
+                        select.selectedIndex = 0;
+                    }
+                    select.parentNode.replaceChild(choix, select);
+                }
+            }
+            
+            window.onresize = function(event) {
+                var haut = (window.innerHeight)-35;
+                $("#carte").css("height", haut);
+            }  
 
             function createM(infoW) {
 
@@ -93,16 +124,13 @@ include('config.php')
 
             function geocodePosition(pos) {
 
-                document.getElementById('lat').innerHTML = pos.lat();
-                document.getElementById('lng').innerHTML = pos.lng();
-
                 geocoder.geocode({
                     latLng : pos
                 }, function(responses) {
                     if(responses && responses.length > 0) {
                         updateMarkerAddress(responses[0].formatted_address);
                     } else {
-                        updateMarkerAddress('Vous dans l\'eau ?');
+                        updateMarkerAddress('Vous ette sdans l\'eau ?');
                     }
                 });
             }
@@ -116,8 +144,7 @@ include('config.php')
             }
 
             function updateMarkerAddress(str) {
-                document.getElementById('adresse').innerHTML = "Adresse : " + str + "<br>";
-                //document.getElementById('address').innerHTML = str;
+                document.getElementById('adresse').innerHTML = str;
             }
 
             function initialize() {
@@ -138,7 +165,7 @@ include('config.php')
                 marker = new google.maps.Marker({
                     map : map,
                     draggable : true,
-                    position: new google.maps.LatLng(47.8688, 2.2195)
+                    position : new google.maps.LatLng(47.8688, 2.2195)
                 });
 
                 google.maps.event.addListener(autocomplete, 'place_changed', function() {
@@ -174,49 +201,130 @@ include('config.php')
                 });
 
                 google.maps.event.addListener(marker, 'drag', function() {
-                    updateMarkerStatus('Dragging...');
+                    updateMarkerStatus('Deplacement en cours...');
                     updateMarkerPosition(marker.getPosition());
                 });
 
                 google.maps.event.addListener(marker, 'dragend', function() {
-                    updateMarkerStatus('Drag ended');
+                    updateMarkerStatus('marqueur positionne');
                     geocodePosition(marker.getPosition());
                     currentmarker(marker, map);
                 });
 
                 google.maps.event.addListener(marker, 'dragstart', function() {
-                    //updateMarkerAddress('Dragging...');
+                    updateMarkerAddress('Deplacement en cours...');
                 });
                 setTimeout(function() {
                     $("#loader").css("display", "none");
                     $("#carte").css("visibility", "visible");
-                }, 3000);
+                }, 1000);
+                
+                 var haut = (window.innerHeight)-35;
+                $("#carte").css("height", haut);
             }
+            
+            
         </script>
     </head>
     <body onload="initialize()">
         <div id="volet">
-            <h1> Liste des sites </h1>
+            <h2> Creation d'un sites </h2>
             <br />
             <input id="searchTextField" type="text" size="150">
             <br />
             <div id="markerStatus">
-                Click and drag the marker
+                Cliquez et deplace le marqueur
             </div>
-            <div id="info"></div>
-            <div id="adresse"></div>
+            <div id="info">Latitude & longitude</div>
+            <div id="adresse">Adresse recupere du marqueur</div>
             <br />
+            
+            <form id="formulaire" method="post" action="">
+                <ul>
+                    <div id="general">
+                        <label>Titre du site </label>
+                        <div>
+                            <input class="titre" name="element_1" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Auteur de la fiche </label>
+                        <div>
+                            <input id="auteur" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Date fiche</label>
+                        <div>
+                            <input id="date" type="text" maxlength="255" value=""/>
+                        </div>  
+                        <label>Numeros du site </label>
+                        <div>
+                            <input id="numeros" type="text" maxlength="255" value=""/>
+                        </div>    
+                        <label>Commune du site</label>
+                        <div>
+                            <input id="commune" type="text" maxlength="255" value=""/>
+                        </div>                 
+                        <label>Adresse du site </label>
+                        <div>
+                            <input class="adresse" name="element_2" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Departement du site</label>
+                        <div>
+                            <input id="departement" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Nature des operations</label>
+                        <div>
+                            <select id="nature" onchange="choisirselect(this);">
+                              <option value="prospections">prospections</option>
+                              <option value="survol">survol</option>
+                              <option value="restauration">restauration</option>
+                              <option value="sondage">sondage</option>
+                              <option value="fouille">fouille</option>
+                              <option value="choix">autre (Tapez votre operation)</option>
+                            </select>
+                        </div>
+                        <label>Structures archeologiques</label>
+                        <div>
+                            <select id="nature" onchange="choisirselect(this);">
+                              <option value="temple">temple</option>
+                              <option value="annexe">annexe</option>
+                              <option value="decor">decor</option>
+                              <option value="mur">mur</option>
+                              <option value="fondation">fondation</option>
+                              <option value="fosse">fosse</option>
+                              <option value="fosse">fosse</option>
+                              <option value="poteaux">poteaux</option>
+                              <option value="choix">autres structures</option>
+                            </select>
+                        </div>
+                        <label>Mobilier archeologique</label>
+                        <div>
+                            <input id="mobilier" type="text" maxlength="255" value=""/>
+                        </div> 
+                        <label>Sources historique</label>
+                        <div>
+                            <input id="sourcehist" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Sources epigraphiques</label>
+                        <div>
+                            <input id="sourceepigr" type="text" maxlength="255" value=""/>
+                        </div>
+                        <label>Datation </label></br>
+                            <input id="datation" type="text" maxlength="255" value=""/>
+                   
+
+                        <tr>
+                            <select id="fichier" multiple="multiple" size="5"></select>
+                        </tr>
+
+                    </div>
+
+                </ul>
             <button id="creer" >
-                Créer ce site
+                Creation
             </button>
-            <div id="markers" style="position:absolute; top:70px; left:680px; width:200px; height:100px;">
-                <div id="m1" class="drag" style="position:absolute; left:0; width:32px; height:32px;"><img src="http://maps.gstatic.com/mapfiles/ms/icons/ltblue-dot.png" width="32" height="32" alt="" />
-                </div>
-                <div id="m2" class="drag" style="position:absolute; left:50px; width:32px; height:32px;"><img src="http://maps.gstatic.com/mapfiles/ms/icons/orange-dot.png" width="32" height="32" alt="" />
-                </div>
-                <div id="m3" class="drag" style="position:absolute; left:100px; width:32px; height:32px;"><img src="http://maps.gstatic.com/mapfiles/ms/icons/pink-dot.png" width="32" height="32" alt="" />
-                </div>
-            </div>
+            </form>
+        </div>
+
+
         </div>
         <?php
 if(isset($_SESSION['username']))
@@ -225,8 +333,8 @@ if(isset($_SESSION['username']))
         <div id="top">
             <a href="edit_infos.php">Modifier</a>
             <a href="deconnection.php">Déconnection</a>
-            <span style="float: right; padding-right: 10px;">Bienvenue <?php 
-                echo $_SESSION['username'];
+            <span style="float: right; padding-right: 10px;">Bienvenue <?php
+            echo $_SESSION['username'];
                 ?></span>
         </div>
         <?php
@@ -256,183 +364,90 @@ if(isset($_SESSION['username']))
         </div>
         <?php
         }
-        ?> <div id="carte" style="width:100%; height:100%"></div>
-        <div id="dialog">
-            <form method="post" action="">
-                <ul>
-                    <li>
-                        <a href="#general">General</a>
-                    </li>
-                    <li>
-                        <a href="#image_marker">Image marker</a>
-                    </li>
-                    <li>
-                        <a href="#image">Ressources</a>
-                    </li>
-                </ul>
-                <ul>
-                    <div id="general">
-                        <div id="lat"></div>
-                        <div id="lng"></div>
-                        <div id="adresse"></div>
-                        <label>Titre du site </label>
-                        <div>
-                            <input class="titre" name="element_1" type="text" maxlength="255" value=""/>
-                        </div>
-                        <label>Adresse du site </label>
-                        <div>
-                            <input class="adresse" name="element_2" type="text" maxlength="255" value=""/>
-                        </div>
-                        <label>Date </label>
-                        <textarea class="date"></textarea>
-                        <label>Description </label>
-                        <div>
-                            <textarea class="description"></textarea>
-                        </div>
-                    </div>
-                    <div id="image_marker">
-                        <div id="icone">
-                            <table>
-                                <tr>
-                                    <td><img src="media/images/prayer.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    prayer</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/cathedral.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    cathedral</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/catholicgrave.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    catholicgrave</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/cemetary.png" />
-                                    <input name="icon"id="radio" type="radio" />
-                                    cemetary</td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/chapel-2.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/church-2.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/convent-2.png" />
-                                    <input name="icon" id="radio" type="radio" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="media/images/cross-2.png" />
-                                    <input name="icon" id="radio"  type="radio" />
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div id="image">
-                 
-                            <tr><select id="fichier" multiple="multiple" size="10"></select></tr>
+        ?>
+        
+         <div id="carte" style="width:100%; height:100%"></div>
 
-                        </div>
+        </div>
+        <script type="text/javascript">
+            $("a.site").fancybox({
+                'hideOnContentClick' : true,
+                'padding' : 0,
+                'overlayColor' : '#D3D3D3',
+                'transitionIn' : 'elastic',
+                'transitionOut' : 'elastic',
+                'overlayOpacity' : 0.7,
+                'zoomSpeedIn' : 3500,
+                'zoomSpeedOut' : 3500,
+                'width' : 425,
+                'height' : 350,
+                'type' : 'iframe'
+            });
 
-                        </ul>
-                        </form>
-                        </div>
+            $("#creer").click(function() {
+                $("dialog").css("display", "block");
+                $("#dialog").tabs();
+                $("#dialog").dialog({
+                    modal : true,
+                    draggable : true,
+                    resizable : true,
+                    width : 505,
+                    height : 700,
+                    buttons : {
+                        Ok : function() {
+                            var infow = new Array();
 
-                        </div>
-                        <script type="text/javascript">
-                        
-                                
-
-                        
-                            $("a.site").fancybox({
-                                'hideOnContentClick' : true,
-                                'padding' : 0,
-                                'overlayColor' : '#D3D3D3',
-                                'transitionIn' : 'elastic',
-                                'transitionOut' : 'elastic',
-                                'overlayOpacity' : 0.7,
-                                'zoomSpeedIn' : 3500,
-                                'zoomSpeedOut' : 3500,
-                                'width' : 425,
-                                'height' : 350,
-                                'type' : 'iframe'
-                            });
-                            
-
-
-                            $("#creer").click(function() {
-                                $("dialog").css("display", "block");
-                                $("#dialog").tabs();
-                                $("#dialog").dialog({
-                                    modal : true,
-                                    draggable : true,
-                                    resizable : true,
-                                    width : 505,
-                                    height : 700,
-                                    buttons : {
-                                        Ok : function() {
-                                            var infow = new Array();
-
-                                            infow["titre"] = $(".titre").val();
-                                            infow["adresse"] = $("#adresse").text();
-                                            infow["date"] = $(".date").val();
-                                            infow["description"] = $(".description").val();
-                                            infow["lat"] = $("#lat").text();
-                                            infow["lng"] = $("#lng").text();
-                                            createM(infow);
-                                            $(this).dialog("close");
-                                        },
-                                        "Annuler" : function() {
-                                            $(this).dialog("close");
-                                        }
-                                    }
-                                });
-                            });
-
-                            $("#top #menu").mouseover(function() {
-                                $(this).animate({
-                                    backgroundColor : "black"
-                                }, 200);
-                            }).mouseout(function() {
-                                $(this).animate({
-                                    backgroundColor : "darkgrey"
-                                }, 200);
-                            });
-                            $(function() {
-                                $("#infobulle").tabs();
-                            });
-
-                         </script>
-               
-                         <?php
-                $dirname = 'media/images/marker-image/';
-                $dir = opendir($dirname); 
-                
-                while($file = readdir($dir)) {
-                    if($file != '.' && $file != '..' && !is_dir($dirname.$file))
-                    {
-                        //echo '<a href="'.$dirname.$file.'">'.$file.'</a>';
-                        echo '
-                        
-                        <script type="text/javascript">$(\'#fichier\').append(new Option("'.$file.'", "'.$file.'", false, false));</script>
-                        
-                        ';
-
-                      
+                            infow["titre"] = $(".titre").val();
+                            infow["adresse"] = $("#adresse").text();
+                            infow["date"] = $(".date").val();
+                            infow["description"] = $(".description").val();
+                            infow["lat"] = $("#lat").text();
+                            infow["lng"] = $("#lng").text();
+                            createM(infow);
+                            $(this).dialog("close");
+                        },
+                        "Annuler" : function() {
+                            $(this).dialog("close");
+                        }
                     }
-                }
-                
-                closedir($dir);
-            ?>
-                        
-                       
-                        </body>
-                        </html>
+                });
+            });
+
+            $("#top #menu").mouseover(function() {
+                $(this).animate({
+                    backgroundColor : "black"
+                }, 200);
+            }).mouseout(function() {
+                $(this).animate({
+                    backgroundColor : "darkgrey"
+                }, 200);
+            });
+            $(function() {
+                $("#infobulle").tabs();
+            });
+$("#formulaire").scrollbars();
+        </script>
+
+        <?php
+        $dirname = 'media/images/marker-image/';
+        $dir = opendir($dirname);
+
+        while ($file = readdir($dir)) {
+            if ($file != '.' && $file != '..' && !is_dir($dirname . $file)) {
+                //echo '<a href="'.$dirname.$file.'">'.$file.'</a>';
+                echo '
+
+        <script type="text/javascript">
+$(\'#fichier\').append(new Option("' . $file . '", "' . $file . '", false, false));
+        </script>
+
+        ';
+
+            }
+        }
+
+        closedir($dir);
+        ?>
+
+    </body>
+</html>
