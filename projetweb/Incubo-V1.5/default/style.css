@@ -50,12 +50,15 @@ input
 #top{
 
 	padding-left : 10px;
-	background-color: darkgrey;
-	border-bottom: 5px solid black;
+	background-color: #0D2C52;
+	border-bottom: 5px double white;
 	height : 26px;
 	font: 1.2em 'Montserrat', sans-serif;
 }
 
+#top #menu{
+background-color: #0D2C52;
+}
 
 }
  div#map {
@@ -102,13 +105,13 @@ input
 }
 
 
-#volet #markerStatus, #info, #adresse{
+#volet #markerStatus, #latitude, #longitude, #adresse{
 text-align: center;
     width: 300px;
     padding: 2px;
 }
 #volet{
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(8, 13, 31, 0.9);
 	right : 5px;
 	width : 300px;
 	height : auto;
@@ -121,6 +124,9 @@ text-align: center;
 	-moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
+    border-style: double;
+    border-color: white;
+    border-width: 5px;
 }
 
 #volet h2{
@@ -151,26 +157,18 @@ height: 580px;
 
 }
 
-#exemple{
-float: right;
-}
+
 
 .administration{
-    padding-bottom: 25px;
     background-color : #D4D4D4; 
-    float: left;
-    height: 360px;
+bottom : 0;
     width: 100%;
-    bottom: 0px;
-    position: fixed;
+    position: absolute;
+     overflow: auto;
 }
-.administration h3{
-    background-color: black;
-    color: white;
-    padding: 5px;
-    margin-bottom: 5px;
 
-}
+
+
 
 #carte{
     position : relative;
@@ -204,14 +202,24 @@ background: url(../images/login-box-back.png) no-repeat left top;
 }
 
 #creer {
-margin-left: 100px;
+width : 90%;
 border-radius: 5px;
-padding : 3px;
+margin-left : 15px;
+padding : 5px;
+background-color: grey;
+color : black;
+cursor: hand;
 }
+
+#creer:hover {
+background-color: #0D2C52;
+color : white;
+}
+
 
 #formulaire{ 
 padding : 15px; 
-top : 214px;
+top : 240px;
 overflow: auto; 
 height: auto;  
 left : 3px;
@@ -224,11 +232,29 @@ bottom: 5px;
 width: 240px;
 }
 
-#formulaire input, select{
+#formulaire input{
 width: 240px; 
 margin-bottom: 5px;
 margin-right: 20px;
+-webkit-border-radius: 50px;
+-moz-border-radius: 50px;
+border-radius: 50px;
+border-color: black;
+border-width: 4px;
 }
+
+#formulaire select{
+width: 240px; 
+margin-bottom: 5px;
+margin-right: 20px;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+border-color: black;
+border-width: 4px;
+margin-bottom : 15px;
+}
+
 
 #general{
 margin-left: 15px;

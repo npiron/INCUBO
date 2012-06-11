@@ -77,48 +77,35 @@ include('config.php')
                 $("#carte").css("height", haut);
             }  
 
-            function createM(infoW) {
+            function createM() {
 
-                marker.setPosition(null);
-
-                var r = infoW;
-                var save_marker = new google.maps.Marker({
-                    map : mapM,
-                    draggable : true,
-                    position : _latlng
-                });
-
-                var text = ['<div id="InfoText">', '<div class="tabs"><ul><li><a href="#tab1">General</a></li>', '<li><a href="#tab2" id="SV">Street View</a></li></ul>', '<div id="tab1">', infoW["titre"] + '</br>', infoW["adresse"] + '</br>', infoW["date"] + '</br>', infoW["description"] + '</br>', '</div>', '<div id="tab2">', 'Carouselle d\'image', '</div>', '</div>'].join('');
-                infowindow = new google.maps.InfoWindow({
-                    content : text,
-                    maxWidth : 500
-                });
-                alert(infoW["titre"] + infoW["adresse"] + infoW["date"] + infoW["description"] + infoW["lat"] + infoW["lng"]);
                 $.ajax({
                     type : "POST",
                     url : "creationM.php",
                     data : {
-                        titre : infoW["titre"],
-                        adresse : infoW["adresse"],
-                        date : infoW["date"],
-                        description : infoW["description"],
-                        latitude : infoW["lat"],
-                        longitude : infoW["lng"]
+                        codeSite : $("#codeSite").val(),
+                        latitude : $("#latitude").text(),
+                        longitude : $("#longitude").text(),
+                        titre : $("#titre").val(),
+                        adresse : $("#adresse").val(),
+                        commune : $("#commune").val(),
+                        departement : $("#departement").val(),
+                        lieuxDit : $("#lieuDit").val(),
+                        date : $("#date").val(),
+                        description : $("#description").val(),
+                        auteurFiche : $("#auteur").val(),
+                        operation : $("#operation").val(),
+                        structArcheo : $("#structArcheo").val(),
+                        mobilierArcheo : $("#mobilierArcheo").val(),
+                        sourcesHisto : $("#sourcesHisto").val(),
+                        sourcesEpigra : $("#sourcesEpigra").val(),
+                        datation : $("#datation").val()
                     }
                 }).done(function(msg) {
                     alert("Data Saved: " + msg);
-                });
+                    document.forms.formulaire.reset();
 
-                google.maps.event.addListener(save_marker, 'dblclick', function() {
-                    if(infowindow)
-                        infowindow.close();
-                    infowindow.open(mapM, save_marker);
                 });
-                google.maps.event.addListener(infowindow, 'domready', function() {
-                    $("#InfoText").tabs();
-                });
-
-                infowindow.open(mapM, save_marker);
 
             }
 
@@ -140,11 +127,12 @@ include('config.php')
             }
 
             function updateMarkerPosition(latLng) {
-                document.getElementById('info').innerHTML = [latLng.lat(), latLng.lng()].join(', ');
+                document.getElementById('latitude').innerHTML = latLng.lat(); 
+                document.getElementById('longitude').innerHTML = latLng.lng();
             }
 
             function updateMarkerAddress(str) {
-                document.getElementById('adresse').innerHTML = str;
+                document.getElementById('adresse').value = str;
             }
 
             function initialize() {
@@ -235,93 +223,101 @@ include('config.php')
             <div id="markerStatus">
                 Cliquez et deplace le marqueur
             </div>
-            <div id="info">Latitude & longitude</div>
-            <div id="adresse">Adresse recupere du marqueur</div>
+            <div id="latitude">Latitude</div>
+            <div id="longitude">longitude</div>
             <br />
             
-            <form id="formulaire" method="post" action="">
+            <form id="formulaire" method="post" action="#">
                 <ul>
                     <div id="general">
-                        <label>Titre du site </label>
-                        <div>
-                            <input class="titre" name="element_1" type="text" maxlength="255" value=""/>
-                        </div>
-                        <label>Auteur de la fiche </label>
-                        <div>
-                            <input id="auteur" type="text" maxlength="255" value=""/>
-                        </div>
-                        <label>Date fiche</label>
-                        <div>
-                            <input id="date" type="text" maxlength="255" value=""/>
-                        </div>  
+                        
                         <label>Numeros du site </label>
                         <div>
-                            <input id="numeros" type="text" maxlength="255" value=""/>
-                        </div>    
+                            <input id="codeSite" type="text" maxlength="255" value=""/>
+                        </div> 
+                        
+                        <label>Titre du site </label>
+                        <div>
+                            <input id="titre" type="text" maxlength="255" value=""/>
+                        </div>
+                        
+                        <label>Adresse du site </label>
+                        <div>
+                            <input id="adresse" type="text" maxlength="255" value=""/>
+                        </div>
+                        
                         <label>Commune du site</label>
                         <div>
                             <input id="commune" type="text" maxlength="255" value=""/>
-                        </div>                 
-                        <label>Adresse du site </label>
-                        <div>
-                            <input class="adresse" name="element_2" type="text" maxlength="255" value=""/>
-                        </div>
+                        </div> 
+                        
                         <label>Departement du site</label>
                         <div>
                             <input id="departement" type="text" maxlength="255" value=""/>
                         </div>
+                        
+                        <label>Lieu dit du site</label>
+                        <div>
+                            <input id="lieuDit" type="text" maxlength="255" value=""/>
+                        </div>
+                        
+                        <label>Date fiche</label>
+                        <div>
+                            <input id="date" type="text" maxlength="255" value=""/>
+                        </div> 
+                        
+                        <label>Description</label>
+                        <div>
+                            <input id="description" type="text" maxlength="255" value=""/>
+                        </div>
+                        
+                        <label>Auteur de la fiche </label>
+                        <div>
+                            <input id="auteur" type="text" maxlength="255" value=""/>
+                        </div>
+
                         <label>Nature des operations</label>
                         <div>
-                            <select id="nature" onchange="choisirselect(this);">
-                              <option value="prospections">prospections</option>
-                              <option value="survol">survol</option>
-                              <option value="restauration">restauration</option>
-                              <option value="sondage">sondage</option>
-                              <option value="fouille">fouille</option>
-                              <option value="choix">autre (Tapez votre operation)</option>
-                            </select>
+                            <input id="operation" type="text" maxlength="255" value=""/>
                         </div>
+                        
                         <label>Structures archeologiques</label>
                         <div>
-                            <select id="nature" onchange="choisirselect(this);">
-                              <option value="temple">temple</option>
-                              <option value="annexe">annexe</option>
-                              <option value="decor">decor</option>
-                              <option value="mur">mur</option>
-                              <option value="fondation">fondation</option>
-                              <option value="fosse">fosse</option>
-                              <option value="fosse">fosse</option>
-                              <option value="poteaux">poteaux</option>
-                              <option value="choix">autres structures</option>
-                            </select>
+                            <input id="structArcheo" type="text" maxlength="255" value=""/>
                         </div>
+                        
                         <label>Mobilier archeologique</label>
                         <div>
-                            <input id="mobilier" type="text" maxlength="255" value=""/>
+                            <input id="mobilierArcheo" type="text" maxlength="255" value=""/>
                         </div> 
+                        
                         <label>Sources historique</label>
                         <div>
-                            <input id="sourcehist" type="text" maxlength="255" value=""/>
+                            <input id="sourcesHisto" type="text" maxlength="255" value=""/>
                         </div>
+                        
                         <label>Sources epigraphiques</label>
                         <div>
-                            <input id="sourceepigr" type="text" maxlength="255" value=""/>
+                            <input id="sourcesEpigra" type="text" maxlength="255" value=""/>
                         </div>
+                        
                         <label>Datation </label></br>
+                        <div>
                             <input id="datation" type="text" maxlength="255" value=""/>
-                   
-
-                        <tr>
+                        </div>
+                        
+                        <label>Pieces jointes</label></br>
+                        <div>
                             <select id="fichier" multiple="multiple" size="5"></select>
-                        </tr>
-
+                        </div>
+                        
                     </div>
 
                 </ul>
-            <button id="creer" >
-                Creation
-            </button>
+
             </form>
+              <button id="creer" value="Creer" onClick="createM();" >Creer</button>
+            
         </div>
 
 
@@ -360,6 +356,9 @@ if(isset($_SESSION['username']))
                 <li>
                     <a id="menu" href="sign_up.php">S'inscrire</a>
                 </li>
+                <li>
+                    <a id="menu" href="incubo-list.php">Consultation</a>
+                </li>
             </ul>
         </div>
         <?php
@@ -384,48 +383,21 @@ if(isset($_SESSION['username']))
                 'type' : 'iframe'
             });
 
-            $("#creer").click(function() {
-                $("dialog").css("display", "block");
-                $("#dialog").tabs();
-                $("#dialog").dialog({
-                    modal : true,
-                    draggable : true,
-                    resizable : true,
-                    width : 505,
-                    height : 700,
-                    buttons : {
-                        Ok : function() {
-                            var infow = new Array();
-
-                            infow["titre"] = $(".titre").val();
-                            infow["adresse"] = $("#adresse").text();
-                            infow["date"] = $(".date").val();
-                            infow["description"] = $(".description").val();
-                            infow["lat"] = $("#lat").text();
-                            infow["lng"] = $("#lng").text();
-                            createM(infow);
-                            $(this).dialog("close");
-                        },
-                        "Annuler" : function() {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-            });
-
             $("#top #menu").mouseover(function() {
-                $(this).animate({
+                $(this).stop(true, false).animate({
                     backgroundColor : "black"
-                }, 200);
+                }, 300);
             }).mouseout(function() {
-                $(this).animate({
-                    backgroundColor : "darkgrey"
-                }, 200);
+                $(this).stop(true, false).animate({
+                    backgroundColor : "#0D2C52"
+                }, 300);
             });
             $(function() {
                 $("#infobulle").tabs();
             });
-$("#formulaire").scrollbars();
+            
+            $("#formulaire").scrollbars();
+            
         </script>
 
         <?php
@@ -436,12 +408,10 @@ $("#formulaire").scrollbars();
             if ($file != '.' && $file != '..' && !is_dir($dirname . $file)) {
                 //echo '<a href="'.$dirname.$file.'">'.$file.'</a>';
                 echo '
-
-        <script type="text/javascript">
-$(\'#fichier\').append(new Option("' . $file . '", "' . $file . '", false, false));
-        </script>
-
-        ';
+                <script type="text/javascript">
+                    $(\'#fichier\').append(new Option("' . $file . '", "' . $file . '", false, false));
+                </script>
+                ';
 
             }
         }

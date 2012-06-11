@@ -22,6 +22,13 @@ include('config.php');
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/smoothness/jquery-ui.css" />
 
 	   
+
+<link rel="stylesheet" type="text/css" media="screen" href="media/jqgrid/css/ui.jqgrid.css" />
+ 
+<script src="media/jqgrid/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="media/jqgrid/js/i18n/grid.locale-fr.js" type="text/javascript"></script>
+<script src="media/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	   
 	   
 	    <link type="text/css" rel="stylesheet" href="media/css/demo_table.css" />
         <script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
@@ -289,15 +296,60 @@ include('config.php');
                     var haut = (window.innerHeight)-210;
                 $("#carte").css("height", haut);
                 
-                oTable = $('#example').dataTable( {
-                                "sScrollY": "360px",
-                                "bPaginate": false,
-                                "bScrollCollapse": true,
-                                "sAjaxSource" : 'initList.php'
+        /*        oTable = $('#example').dataTable( {
+                     "sScrollY": "215px",
+                    "bPaginate": true,
+                    "sPaginationType": "full_numbers",
+                    "bFilter": true,
+                    "bSort": true,
+                    "bAutoWidth": false,
+                    "sAjaxSource" : 'initList.php',
+                    
+                            "sScrollX": "100%",
+        "sScrollXInner": "110%",
+        "bScrollCollapse": true
                                 
                 } );    
                                 
-                          
+                    */
+                   
+                   jQuery("#list2").jqGrid({
+                        url:'initList.php',
+                        datatype: "json",
+                        autowidth: true,
+                        colNames:['ID','codeSite', 'latitude', 'longitude','titre','adresse','commune', 'departement',
+                         'lieuxDit', 'date', 'description', 'auteurFiche', 'operation', 'structArcheo', 'mobilierArcheo',
+                          'sourcesHisto', 'sourcesEpigra', 'datation', 'piecesJointes'],
+                        colModel:[
+                            {name:'id',index:'id', width:90},
+                            {name:'codeSite',index:'codeSite', width:90},
+                            {name:'latitude',index:'latitude', width:300},
+                            {name:'longitude',index:'longitude', width:300},
+                            {name:'titre',index:'titre', width:300},      
+                            {name:'adresse',index:'adresse', width:300},       
+                            {name:'commune',index:'commune', width:300},  
+                            {name:'departement',index:'departement', width:300},
+                            {name:'lieuxDit',index:'lieuDit', width:300},
+                            {name:'date',index:'date', width:300},
+                            {name:'description',index:'description', width:300},
+                            {name:'auteurFiche',index:'auteurFiche', width:300},
+                            {name:'operation',index:'operation', width:300},
+                            {name:'structArcheo',index:'structArcheo', width:300},
+                            {name:'mobilierArcheo',index:'mobilierArcheo', width:300},
+                            {name:'sourcesHisto',index:'sourcesHisto', width:300},
+                            {name:'sourcesEpigra',index:'sourcesEpigra', width:300},
+                            {name:'datation',index:'datation', width:300},
+                            {name:'piecesJointes',index:'piecesJointes', width:300}    
+                        ],
+                        rowNum:10,
+                        rowList:[10,20,30],
+                        pager: '#pager2',
+                        sortname: 'id',
+                        viewrecords: true,
+                        sortorder: "desc",
+                        caption:"List des Sites"
+                    });
+                    jQuery("#list2").jqGrid('navGrid','#pager2',{edit:false,add:false,del:false});      
                 
                 /* Add a click handler to the rows - this could be used as a callback */
                
@@ -319,8 +371,8 @@ include('config.php');
                     var oT = document.getElementById('example');
                     nR++;
                     //var rowLength = oT.rows.length;
-                    var lat = oT.rows[nR].cells[1].childNodes[0].data;
-                    var lng = oT.rows[nR].cells[2].childNodes[0].data;
+                    var lat = oT.rows[nR].cells[2].childNodes[0].data;
+                    var lng = oT.rows[nR].cells[3].childNodes[0].data;
                     //alert(lat + "   " + lng);
                     
                     var center = new google.maps.LatLng(lat, lng);
@@ -387,8 +439,9 @@ include('config.php');
 		            {
 		                ?>
 		                <div id="top">
-		                    <a href="edit_infos.php">Modifier mes informations personnelles</a>
+		                    <a href="edit_infos.php">Administration</a>
 		                    <a href="deconnection.php">Déconnection</a>
+
 						</div>
 		                <?php
 
@@ -404,6 +457,8 @@ include('config.php');
 			                    	<li><a id="menu" class="site" href="connexion.php?iframe" class="connection">Connection</a></li>
 			                    	<li><a id="menu" href="profile.php">Administration</a></li>
 			                    	<li><a id="menu" href="sign_up.php">S'inscrire</a></li>
+			                    	<a href="deconnection.php">Supprimer</a>
+                                    <a href="deconnection.php">Modifier</a>
 		                    	</ul>
 		                	</div>
 		                <?php
@@ -417,24 +472,12 @@ include('config.php');
 
 
         <div class="administration">
-            <h3> Liste des sites / lieux </h3>
+       
+<table id="list2"></table>
+<div id="pager2"></div>
 
-<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
-    <thead>
-         <tr>
-             <th>Code site</th>
-             <th></th>
-             <th>Three</th>
-             <th>Four</th>
-         </tr>
-     </thead>
-     <tbody>
- 
-     </tbody>
-    
-</table>
-
-         </div>
+</div>
+     
 
             
 

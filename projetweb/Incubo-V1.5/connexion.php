@@ -43,7 +43,7 @@ else // connection
 			$password = $_POST['password'];
 		}
 		//On recupere le mot de passe de lutilisateur
-		$req = mysql_query('select password,id from users where username="'.$username.'"');
+		$req = mysql_query('select password, id, userType from users where username="'.$username.'"');
 		$dn = mysql_fetch_array($req);
 		//On le compare a celui quil a entre et on verifie si le membre existe
 		if($dn['password']==$password and mysql_num_rows($req)>0)

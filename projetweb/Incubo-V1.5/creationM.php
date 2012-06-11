@@ -3,8 +3,43 @@ include('config.php');
 
 echo $_POST['titre']."</br>".$_POST['adresse']."</br>".$_POST['date']."</br>".$_POST['description'];
 
-$sql = "INSERT INTO site (titre, latitude, longitude, adresse, date, description)
-VALUES ('$_POST[titre]', '$_POST[latitude]', '$_POST[longitude]', '$_POST[adresse]', '$_POST[date]', '$_POST[description]')"; 
+$sql = "INSERT INTO site (
+    codeSite, 
+    latitude, 
+    longitude, 
+    titre, 
+    adresse, 
+    commune, 
+    departement, 
+    lieuxDit, 
+    date, 
+    description, 
+    auteurFiche, 
+    operation, 
+    structArcheo, 
+    mobilierArcheo, 
+    sourcesHisto, 
+    sourcesEpigra, 
+    datation)
+    VALUES (
+    '$_POST[codeSite]', 
+    '$_POST[latitude]', 
+    '$_POST[longitude]', 
+    '$_POST[titre]', 
+    '$_POST[adresse]', 
+    '$_POST[commune]',
+    '$_POST[departement]', 
+    '$_POST[lieuxDit]',
+    '$_POST[date]', 
+    '$_POST[description]', 
+    '$_POST[auteurFiche]', 
+    '$_POST[operation]', 
+    '$_POST[structArcheo]',   
+    '$_POST[mobilierArcheo]',
+    '$_POST[sourcesHisto]',
+    '$_POST[sourcesEpigra]',
+    '$_POST[datation]'                                        
+)"; 
 
 // on envoie la requête 
 $req = mysql_query($sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysql_error()); 
@@ -19,7 +54,5 @@ while($data = mysql_fetch_assoc($req))
 */
 // on ferme la connexion à mysql 
 mysql_close(); 
-
-
 
 ?>
