@@ -9,7 +9,7 @@ espace membre puisse fonctionner correctement.
 ******************************************************/
 
 //On se connecte a la base de donnee
-$desc = mysql_connect('tunnel.pagodabox.com:3306', 'rolande', 'ndN1A4Pc');
+$desc = mysql_connect('tunnel.pagodabox.com', 'rolande', 'ndN1A4Pc');
 mysql_select_db('incubo-bdd');
 
 //Email du webmaster
