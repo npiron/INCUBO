@@ -1,7 +1,7 @@
 <?php
 //On demarre les sessions
 session_start();
-
+echo 'coucou';
 /******************************************************
 ----------------Configuration Obligatoire--------------
 Veuillez modifier les variables ci-dessous pour que l'
