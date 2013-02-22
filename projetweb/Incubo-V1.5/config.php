@@ -9,8 +9,8 @@ espace membre puisse fonctionner correctement.
 ******************************************************/
 
 //On se connecte a la base de donnee
-$desc = mysql_connect('localhost', 'root', '');
-mysql_select_db('map');
+$desc = mysql_connect('tunnel.pagodabox.com:3306', 'rolande', 'ndN1A4Pc');
+mysql_select_db('incubo-bdd');
 
 //Email du webmaster
 $mail_webmaster = 'example@example.com';
